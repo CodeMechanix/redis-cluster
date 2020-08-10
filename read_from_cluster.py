@@ -18,7 +18,7 @@ redis_cluster = RedisClusterClient()
 
 print("Reading from {0} hashes".format(total))
 
-for x in range(int(os.getenv("TEST_COUNT"))):
+for x in range(int(os.getenv("READ_COUNT"))):
     index = randrange(0, total)
     key = data[index]
     print("{0} => {1}".format(key,redis_cluster.get(key)))
