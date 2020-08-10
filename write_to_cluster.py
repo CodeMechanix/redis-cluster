@@ -14,16 +14,14 @@ def get_random_number():
 
 
 # the actual worker that is writing to redis
-async def worker(redis_cluster_client, faker_client, data, single_worker_limit, i):
-    print("Starting worker {0}".format(i))
-
+async def worker(redis_cluster_client, faker_client, data, single_worker_limit):
+    print("[+]----------./starting worker---------[+]")
     tasks = []
     for x in range(single_worker_limit):
         task = work(x, redis_cluster_client, faker_client, data)
         tasks.append(task)
-    print("Ending worker {0}".format(i))
     await asyncio.wait(tasks)
-    i += 1
+    print("[+]----------./ending worker---------[+]")
 
 
 async def work(job_id,redis_cluster_client,faker_client,data):
@@ -36,7 +34,7 @@ async def work(job_id,redis_cluster_client,faker_client,data):
 
 # write data to a database (file for this demo)
 def save_data(data_source):
-    print("Saving data to ")
+    print("Saving data to data.txt")
     with open('data.txt', 'w') as f:
         for item in data_source:
             f.write("%s\n" % item)
@@ -56,7 +54,7 @@ faker = Faker()
 single_worker_handles = int(os.getenv("SINGLE_WORKER_HANDLES"))
 
 counter = int(os.getenv("COUNTER"))
-print(counter)
+
 save_data(data_source=db_data)
 
 
@@ -66,15 +64,10 @@ async def async_worker():
         event = worker(redis_cluster_client=redis_cluster,
                        faker_client=faker,
                        data=db_data,
-                       single_worker_limit=single_worker_handles, i=x)
+                       single_worker_limit=single_worker_handles)
         event_loop_record.append(event)
 
     await asyncio.wait(event_loop_record)
-
-
-async def work_and_save():
-    await async_worker()
-    save_data(data_source=db_data)
 
 
 async def main():
@@ -83,8 +76,9 @@ async def main():
 
 
 if __name__ == '__main__':
+    print("[+]----------./firing redis cluster for writing---------[+]")
     loop = asyncio.get_event_loop()
 
     loop.run_until_complete(main())
     loop.close()
-    print("[+] -------------- Done ----------------")
+    print("[+]----------End of the line---------[+]")
