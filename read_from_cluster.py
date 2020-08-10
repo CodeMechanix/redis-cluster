@@ -16,6 +16,8 @@ with open('data.txt', 'r') as f:
 
 redis_cluster = RedisClusterClient()
 
+print("Reading from {0}".format(total))
+
 for x in range(int(os.getenv("TEST_COUNT"))):
     index = randrange(0, total)
     key = data[index]

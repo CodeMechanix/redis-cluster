@@ -31,11 +31,14 @@ class RedisClusterClient:
             nodes.append({"host": host, "port": port})
         return nodes
 
+    # returns the redis_cluster library instance
     def instance(self):
         return self.__redis_cluster
 
+    # writes a value to the cluster
     def set(self, key, value, ex, px, nx, xx):
         return self.__redis_cluster.set(key, value, ex, px, nx, xx)
 
+    # reads from cluster
     def get(self, key):
         return self.__redis_cluster.get(key)
