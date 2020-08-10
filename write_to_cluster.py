@@ -31,7 +31,7 @@ async def work(job_id,redis_cluster_client,faker_client,data):
     name = faker_client.name()
     redis_cluster_client.instance().set(unique_id, name)
     data.append(unique_id)
-    print("{0} \t| uuid : {1} \t| {2}".format(job_id, unique_id, name))
+    print("{0} \t| {1} \t| {2}".format(job_id, unique_id, name))
 
 
 # write data to a database (file for this demo)
