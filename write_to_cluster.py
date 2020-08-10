@@ -17,16 +17,21 @@ def get_random_number():
 async def worker(redis_cluster_client, faker_client, data, single_worker_limit, i):
     print("Starting worker {0}".format(i))
 
+    tasks = []
     for x in range(single_worker_limit):
-        unique_id = get_random_number()
-        name = faker_client.name()
-        redis_cluster_client.instance().set(unique_id, name)
-        data.append(unique_id)
-        print("{0} | uuid : {1} | {2}".format(x, unique_id, name))
-
+        task = work(x, redis_cluster_client, faker_client, data)
+        tasks.append(task)
     print("Ending worker {0}".format(i))
+    await asyncio.wait(tasks)
     i += 1
-    await asyncio.sleep(0.0001)
+
+
+async def work(job_id,redis_cluster_client,faker_client,data):
+    unique_id = get_random_number()
+    name = faker_client.name()
+    redis_cluster_client.instance().set(unique_id, name)
+    data.append(unique_id)
+    print("{0} | uuid : {1} | {2}".format(job_id, unique_id, name))
 
 
 # write data to a database (file for this demo)
