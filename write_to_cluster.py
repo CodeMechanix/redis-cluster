@@ -3,6 +3,7 @@ from redis_cluster_client import RedisClusterClient
 from faker import Faker
 import uuid
 import os
+import asyncio
 
 
 # from multiprocessing import Process
@@ -13,13 +14,19 @@ def get_random_number():
 
 
 # the actual worker that is writing to redis
-def worker(redis_cluster_client, faker_client, data, single_worker_limit):
+async def worker(redis_cluster_client, faker_client, data, single_worker_limit, i):
+    print("Starting worker {0}".format(i))
+
     for x in range(single_worker_limit):
         unique_id = get_random_number()
         name = faker_client.name()
         redis_cluster_client.instance().set(unique_id, name)
         data.append(unique_id)
         print("{0} | uuid : {1} | {2}".format(x, unique_id, name))
+
+    print("Ending worker {0}".format(i))
+    i += 1
+    await asyncio.sleep(0.0001)
 
 
 # write data to a database (file for this demo)
@@ -44,14 +51,35 @@ faker = Faker()
 single_worker_handles = int(os.getenv("SINGLE_WORKER_HANDLES"))
 
 counter = int(os.getenv("COUNTER"))
-
-for x in range(counter):
-    worker(redis_cluster_client=redis_cluster,
-           faker_client=faker,
-           data=db_data,
-           single_worker_limit=single_worker_handles)
-
+print(counter)
 save_data(data_source=db_data)
 
-print("[+] -------------- Done ----------------")
 
+async def async_worker():
+    event_loop_record = []
+    for x in range(counter):
+        event = worker(redis_cluster_client=redis_cluster,
+                       faker_client=faker,
+                       data=db_data,
+                       single_worker_limit=single_worker_handles, i=x)
+        event_loop_record.append(event)
+
+    await asyncio.wait(event_loop_record)
+
+
+async def work_and_save():
+    await async_worker()
+    save_data(data_source=db_data)
+
+
+async def main():
+    await async_worker()
+    save_data(data_source=db_data)
+
+
+if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
+
+    loop.run_until_complete(main())
+    loop.close()
+    print("[+] -------------- Done ----------------")
