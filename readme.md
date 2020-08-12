@@ -103,7 +103,7 @@ HASH_SLOT = CRC16(key) mod HASH_SLOTS_NUMBER
 
 For example, let’s assume the key space is divided into 10 slots (0–9). Each node will hold a subset of the hash slots.
 <p align="center">
-  <img height="300" src="https://miro.medium.com/max/1400/1*g_uPH1TnC40Nqiqx4X0ifQ.png">
+  <img src="https://miro.medium.com/max/1400/1*g_uPH1TnC40Nqiqx4X0ifQ.png">
 </p>
 
 ### Detecting failures
