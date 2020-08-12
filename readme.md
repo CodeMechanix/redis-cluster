@@ -2,6 +2,17 @@
 
 Redis Cluster provides a way to run a Redis installation where data is  **automatically sharded across multiple Redis nodes**.
 
+## Table of content
+- [What is redis](#what-is-redis?)
+- [Redis Cluster](#redis-cluster)
+- [Redis Cluster Goals](#redis-cluster-goals)
+- [Sharding](#sharding)
+- [Detecting failures](#detecting-failures)
+- [Clustering in your own machine](#a-cluster-in-your-own-machine)
+- [Simulating-failover](#simulating-failover)
+- [Running this project](#how-to-run-the-project)
+- [Notes](#notes-to-self)
+
 ### What is Redis?
 
 1.  Redis is an  **in-memory,**  **key-value**  **store**.
@@ -28,6 +39,18 @@ SET 'full-name' 'Aryan Ahmed Anik'
 ![source: https://redislabs.com/redis-features/redis-cluster  ](https://i.ibb.co/KWgJBMF/redis-cluster-diagram.png)
 
 A Redis cluster is simply a **data sharding strategy**. 
+
+### Sharding
+Redis Cluster does not use consistent hashing, but a different form of sharding where every key is conceptually part of what we call an  **hash slot**.
+
+There are 16384 hash slots in Redis Cluster, and to compute what is the hash slot of a given key, we simply take the CRC16 of the key modulo 16384.
+
+Every node in a Redis Cluster is responsible for a subset of the hash slots, so for example you may have a cluster with 3 nodes, where:
+
+-   Node A contains hash slots from 0 to 5500.
+-   Node B contains hash slots from 5501 to 11000.
+-   Node C contains hash slots from 11001 to 16383.
+
 #### What is sharding?
   
 The word “**Shard**” means “**a small part of a whole**“. Hence Sharding means dividing a larger part into smaller parts.
@@ -80,18 +103,8 @@ HASH_SLOT = CRC16(key) mod HASH_SLOTS_NUMBER
 For example, let’s assume the key space is divided into 10 slots (0–9). Each node will hold a subset of the hash slots.
 ![Image taken from Varuni's blog (link below)](https://miro.medium.com/max/1400/1*g_uPH1TnC40Nqiqx4X0ifQ.png)
 
-### Sharding
-Redis Cluster does not use consistent hashing, but a different form of sharding where every key is conceptually part of what we call an  **hash slot**.
 
-There are 16384 hash slots in Redis Cluster, and to compute what is the hash slot of a given key, we simply take the CRC16 of the key modulo 16384.
-
-Every node in a Redis Cluster is responsible for a subset of the hash slots, so for example you may have a cluster with 3 nodes, where:
-
--   Node A contains hash slots from 0 to 5500.
--   Node B contains hash slots from 5501 to 11000.
--   Node C contains hash slots from 11001 to 16383.
-
-### Detective failures
+### Detecting failures
 
 Every node has a unique ID in the cluster. This ID is used to identify each and every node across the entire cluster using the gossip protocol.
 
