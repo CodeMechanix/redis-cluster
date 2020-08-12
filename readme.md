@@ -3,7 +3,7 @@
 Redis Cluster provides a way to run a Redis installation where data is  **automatically sharded across multiple Redis nodes**.
 
 ## Table of content
-- [What is redis](#what-is-redis?)
+- [What is redis](#what-is-redis)
 - [Redis Cluster](#redis-cluster)
 - [Redis Cluster Goals](#redis-cluster-goals)
 - [Sharding](#sharding)
