@@ -36,8 +36,9 @@ SET 'full-name' 'Aryan Ahmed Anik'
 **We can put the requests that need to be serviced very fast into the Redis memory and service from there while keeping the rest of the data in the main database as it is a in-memeory database.**
 
 ### Redis cluster
-![source: https://redislabs.com/redis-features/redis-cluster  ](https://i.ibb.co/KWgJBMF/redis-cluster-diagram.png)
-
+<p align="center">
+  <img width="460" height="300" src="https://i.ibb.co/KWgJBMF/redis-cluster-diagram.png">
+</p>
 A Redis cluster is simply a **data sharding strategy**. 
 
 ### Sharding
@@ -101,8 +102,9 @@ HASH_SLOT = CRC16(key) mod HASH_SLOTS_NUMBER
 
 
 For example, let’s assume the key space is divided into 10 slots (0–9). Each node will hold a subset of the hash slots.
-![Image taken from Varuni's blog (link below)](https://miro.medium.com/max/1400/1*g_uPH1TnC40Nqiqx4X0ifQ.png)
-
+<p align="center">
+  <img height="300" src="https://miro.medium.com/max/1400/1*g_uPH1TnC40Nqiqx4X0ifQ.png">
+</p>
 
 ### Detecting failures
 
