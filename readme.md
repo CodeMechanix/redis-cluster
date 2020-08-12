@@ -1,4 +1,4 @@
-## Redis cluster 
+# Redis clustering 
 
 Redis Cluster provides a way to run a Redis installation where data is  **automatically sharded across multiple Redis nodes**.
 
@@ -80,3 +80,34 @@ HASH_SLOT = CRC16(key) mod HASH_SLOTS_NUMBER
 For example, let’s assume the key space is divided into 10 slots (0–9). Each node will hold a subset of the hash slots.
 ![enter image description here](https://miro.medium.com/max/1400/1*g_uPH1TnC40Nqiqx4X0ifQ.png)
 
+### Detective failures
+
+Every node has a unique ID in the cluster. This ID is used to identify each and every node across the entire cluster using the gossip protocol.
+
+So, a node keeps the following information within itself;
+
+-   Node ID, IP, and port
+-   A set of flags
+-   What is the Master of the node if it is flagged as “slave”
+-   Last time a node was pinged
+-   Last time the pong was received
+
+Nodes in a cluster always keep gossiping with each other, enabling them to auto-discover other nodes.
+
+e.g. If A knows B, and B knows C, eventually B will send gossip messages to A about C. Then A will register C as part of the network and will try to connect with C.
+
+When node A talks to the cluster by the gossip protocol, If a/any node fails, the cluster's reply will be node X,Y responded okay but P,Q,R didn't response.
+
+ 
+ ### Notes to self
+ 
+#### Replication Or Clustering?
+If you have more data than RAM in a single machine, use a Redis cluster to shard the data across multiple databases.
+
+If you have less data than RAM in a machine, set up a master/slave replication with a sentinel in front to handle the failover.
+
+#### Why Do you need a minimum of 3 masters?
+
+During the failure detection, the majority of the master nodes are required to come to an agreement. If there are only 2 masters, say A and B and B failed, then the A master node cannot reach to a decision according to the protocol. The A node needs another third node, say C, to tell A that it also cannot reach B.
+
+Special thanks to [Varuni Punchihewa](https://blog.usejournal.com/@varunipunchihewa)
