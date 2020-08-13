@@ -39,6 +39,7 @@ SET 'full-name' 'Aryan Ahmed Anik'
 <p align="center">
   <img width="460" height="300" src="https://i.ibb.co/KWgJBMF/redis-cluster-diagram.png">
 </p>
+
 A Redis cluster is simply a **data sharding strategy**. 
 
 ### Sharding
